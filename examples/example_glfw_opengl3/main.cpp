@@ -25,6 +25,7 @@
 #include <ctime>
 #include <ostream>
 
+#define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
 // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
@@ -136,7 +137,8 @@ int main(int, char**)
 
     // Our state
     bool show_demo_window = false;
-    bool show_another_window = false;
+    bool show_test_window = false;
+    bool show_timechallenge_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -170,10 +172,8 @@ int main(int, char**)
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
-            static int counter = 0;
 
             ImGui::Begin("Welcome!");                          // Create a window called "Hello, world!" and append into it.
-            std::stringstream ss; // create a stringstream object with s as content
             auto t1 = std::chrono::system_clock::now();
             ImGui::SetWindowFontScale(1);
             ImGui::Text("Current Time");               // Display some text (you can use a format strings too)
@@ -184,19 +184,17 @@ int main(int, char**)
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Click to Begin Test!"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            {
-                counter++;
-                show_another_window = true;
-            }
-            ImGui::SameLine();
-            ImGui::Text("Attempt Number = %d", counter);
+                show_test_window = true;
+
+            if (ImGui::Button("Click to Begin Timed Challenge!"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                show_timechallenge_window = true;
             ImGui::End();
         }
 
-        // 3. Show another simple window.
-        if (show_another_window)
+        // 3. Show test window.
+        if (show_test_window)
         {
-            ImGui::Begin("Test Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Begin("Test Window", &show_test_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
             std::random_device rd; // obtain a random number from hardware
             std::mt19937 gen(rd()); // seed the generator
             std::uniform_int_distribution<> distr(0, 10); // define the range
@@ -207,6 +205,57 @@ int main(int, char**)
                 B = distr(gen);
                 flagans = true;
             }
+
+            ImGui::Text("Question %d: %d+%d\n", questioncnt, A, B);
+            ImGui::Text("Input your answer!");
+            ImGui::SameLine();
+            if (ImGui::InputText(" ", buf, 255, ImGuiInputTextFlags_EnterReturnsTrue, NULL, buf))
+            {
+                *tap = std::stoi(buf, &sz);
+                firstattemptflag = true;
+                if (A + B == *tap) {
+                    correctcnt++;
+                }
+                flagans = false;
+            }
+            if (firstattemptflag)
+            {
+                ImGui::Text("Number of Questions Attempted: %d\n", questioncnt - 1);
+                ImGui::Text("Performance Metric: %.3f%%\n", double(correctcnt) / double(questioncnt - 1) * 100);
+            }
+            //if (ImGui::Button("Close Me"))
+              //  show_another_window = false;
+            ImGui::End();
+        }
+
+        // 4. Show timed challenge window.
+        if (show_timechallenge_window)
+        {
+            ImGui::Begin("Time Challenge Window", &show_timechallenge_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            // Animate a simple progress bar
+            static float progress = 0.0f, progress_dir = 1.0f;
+            progress += progress_dir * 0.1f * ImGui::GetIO().DeltaTime;
+            float progress_saturated = IM_CLAMP(progress, 0.0f, 1.0f);
+            char strtxt[32];
+            sprintf(strtxt, "Time left: %.1fsec", 10 - (float)(progress_saturated * 10));
+            ImGui::ProgressBar(progress, ImVec2(0.f, 0.f), strtxt);
+            if (progress_saturated == 1) {
+                progress = 0.0f;
+                flagans = false;
+            }
+
+            std::random_device rd; // obtain a random number from hardware
+            std::mt19937 gen(rd()); // seed the generator
+            std::uniform_int_distribution<> distr(0, 10); // define the range
+            char buf[255] = "";
+            if (!flagans) {
+                questioncnt++;
+                A = distr(gen);
+                B = distr(gen);
+                flagans = true;
+                progress = 0.0f;
+            }
+
             ImGui::Text("Question %d: %d+%d\n", questioncnt, A, B);
             ImGui::Text("Input your answer!");
             ImGui::SameLine();

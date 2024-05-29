@@ -58,6 +58,7 @@
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="MainApp.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.txt" />
@@ -67,5 +68,8 @@
     <None Include="..\..\misc\debuggers\imgui.natstepfilter">
       <Filter>imgui</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="example_glfw_opengl3.rc" />
   </ItemGroup>
 </Project>

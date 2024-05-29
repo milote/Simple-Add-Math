@@ -1,0 +1,11 @@
+﻿  main.cpp
+D:\MS Work\Simple Addition Math\Simple-Add-Math\examples\example_glfw_opengl3\main.cpp(166,18): warning C4551: function call missing argument list
+D:\MS Work\Simple Addition Math\Simple-Add-Math\examples\example_glfw_opengl3\main.cpp(240,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating code
+D:\MS Work\Simple Addition Math\Simple-Add-Math\examples\example_glfw_opengl3\main.cpp(209): warning C4701: potentially uninitialized local variable 'A' used
+D:\MS Work\Simple Addition Math\Simple-Add-Math\examples\example_glfw_opengl3\main.cpp(209): warning C4701: potentially uninitialized local variable 'B' used
+  1 of 2410 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    112 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  example_glfw_opengl3.vcxproj -> D:\MS Work\Simple Addition Math\Simple-Add-Math\examples\example_glfw_opengl3\Release\example_glfw_opengl3.exe
